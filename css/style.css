@@ -43,6 +43,13 @@ a:hover {
   margin-right: 15px;
 }
 
+/* 顶部导航里的「写文章」按钮，做成显眼的主操作 */
+.site-header nav .nav-cta {
+  padding: 3px 12px;
+  border: 1px solid var(--accent-color);
+  border-radius: 999px;
+}
+
 .post-list {
   list-style: none;
   padding: 0;

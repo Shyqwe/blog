@@ -18,6 +18,7 @@ export function layout(title, bodyHtml, user = null) {
       <a href="/">首页</a>
       <a href="/archive">归档</a>
       <a href="/about">关于</a>
+      <a href="/admin" class="nav-cta">✏️ 写文章</a>
     </nav>
   </header>
   ${bodyHtml}
