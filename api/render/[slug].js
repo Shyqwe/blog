@@ -1,5 +1,3 @@
-import { marked } from 'marked';
-import sanitizeHtml from 'sanitize-html';
 import { db, ensureSchema } from '../_db.js';
 import { currentUser } from '../_auth.js';
 import { layout, redirectToLogin } from '../_layout.js';
@@ -8,17 +6,21 @@ import { esc, fmtDate } from '../_html.js';
 /**
  * 文章阅读页：/posts/:slug 经 vercel.json rewrite 到这里。
  * 整站登录墙的一部分：未登录一律跳转 /login。
- * 服务端渲染正文（利于 SEO），评论与点赞由 /js/post.js 客户端加载。
+ * markdown 渲染包改为函数内动态加载：一是便于把加载错误显示在诊断页，
+ * 二是静态引入它们曾导致 Vercel 上整个函数启动失败（本地无法复现）。
  */
 export default async function handler(req, res) {
   const sql = db();
-  await ensureSchema();
-  const user = await currentUser(req);
-  if (!user) return redirectToLogin(res);
-
-  const slug = String(req.query.slug || '');
 
   try {
+    await ensureSchema();
+    const user = await currentUser(req);
+    if (!user) return redirectToLogin(res);
+
+    const slug = String(req.query.slug || '');
+    const { marked } = await import('marked');
+    const sanitizeHtml = (await import('sanitize-html')).default;
+
     const rows = await sql`
       SELECT p.*, u.username AS author
       FROM posts p LEFT JOIN users u ON u.id = p.author_id
@@ -81,8 +83,23 @@ export default async function handler(req, res) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     return res.status(200).send(layout(post.title, body, user));
   } catch (err) {
-    console.error(err);
+    console.error('[render] 文章页出错:', err);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(500).send(layout('服务器错误', '<main><h2>500</h2><p>服务器开小差了，请稍后再试。</p></main>', user));
+    // 临时诊断页：把真实错误直接显示出来，定位问题后换成友好提示
+    return res.status(500).send(
+      layout(
+        '服务器错误',
+        `<main>
+          <h2>500</h2>
+          <p>服务器开小差了，请稍后再试。</p>
+          <p><a href="/">返回首页</a></p>
+          <h3>临时诊断信息（修复后移除）</h3>
+          <pre class="diag">${esc(err.stack || String(err))}</pre>
+        </main>
+        <style>
+          .diag { background: #f6f8fa; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.85em; white-space: pre-wrap; }
+        </style>`
+      )
+    );
   }
 }
