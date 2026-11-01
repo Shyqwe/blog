@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 - 我的博客</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1><a href="/">我的博客</a></h1>
+    <nav>
+      <a href="/login">登录</a>
+      <a href="/register">注册</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="auth-box">
+      <h2>登录</h2>
+      <form id="login-form" class="stack">
+        <input type="text" name="account" placeholder="账号" required autocomplete="username">
+        <input type="password" name="password" placeholder="密码" required autocomplete="current-password">
+        <p class="error"></p>
+        <div><button type="submit">登录</button></div>
+      </form>
+      <p class="muted">还没有账号？<a href="/register">去注册</a></p>
+    </section>
+  </main>
+  <script src="/js/login.js" defer></script>
+</body>
+</html>

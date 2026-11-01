@@ -3,6 +3,7 @@
   --bg-color: #fff;
   --accent-color: #0366d6;
   --secondary-color: #888;
+  --border-color: #eee;
 }
 
 * {
@@ -30,7 +31,7 @@ a:hover {
 
 .site-header {
   padding: 30px 0 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
   margin-bottom: 30px;
 }
 
@@ -57,5 +58,246 @@ a:hover {
 
 time {
   color: var(--secondary-color);
+  font-size: 0.9em;
+}
+
+.muted {
+  color: var(--secondary-color);
+}
+
+/* ---------- 首页：搜索与标签 ---------- */
+
+.toolbar {
+  margin-bottom: 15px;
+}
+
+.toolbar input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.tag-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 999px;
+  font-size: 0.85em;
+  color: var(--text-color);
+}
+
+.tag:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+.tag.active {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #fff;
+}
+
+/* ---------- 登录 / 注册 ---------- */
+
+.auth-box {
+  max-width: 420px;
+}
+
+/* ---------- 按钮与表单 ---------- */
+
+button {
+  padding: 6px 14px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 6px;
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="search"],
+textarea {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.stack {
+  display: grid;
+  gap: 12px;
+}
+
+.stack input,
+.stack textarea {
+  width: 100%;
+}
+
+.error {
+  color: #c0392b;
+  margin: 0;
+  min-height: 1.2em;
+}
+
+.check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---------- 文章阅读页 ---------- */
+
+.post-title {
+  margin-bottom: 5px;
+}
+
+.post-meta {
+  color: var(--secondary-color);
+  font-size: 0.9em;
+}
+
+.draft-badge {
+  color: #c0392b;
+  border: 1px solid #c0392b;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.post-tags {
+  margin: 15px 0 0;
+}
+
+.post-content img {
+  max-width: 100%;
+}
+
+.post-content pre {
+  background: #f6f8fa;
+  padding: 12px;
+  overflow-x: auto;
+  border-radius: 6px;
+}
+
+.post-content code {
+  background: #f6f8fa;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.post-content pre code {
+  padding: 0;
+  background: none;
+}
+
+.post-content blockquote {
+  margin: 0;
+  padding: 0 15px;
+  color: var(--secondary-color);
+  border-left: 4px solid var(--border-color);
+}
+
+.post-actions {
+  margin: 25px 0;
+}
+
+/* ---------- 评论 ---------- */
+
+.comments {
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+}
+
+#comment-form {
+  margin-bottom: 20px;
+}
+
+.hp-field {
+  position: absolute;
+  left: -9999px; /* 蜜罐字段移出视野，人类填不到 */
+}
+
+.comment {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.comment-meta {
+  margin: 0 0 5px;
+}
+
+.comment-meta time {
+  margin-left: 8px;
+}
+
+.comment-body {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ---------- 管理后台 ---------- */
+
+.admin-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.manage-list {
+  list-style: none;
+  padding: 0;
+}
+
+.manage-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+#editor-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* ---------- 归档与页脚 ---------- */
+
+.archive-month h2 {
+  margin-bottom: 5px;
+}
+
+.site-footer {
+  margin: 40px 0 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
   font-size: 0.9em;
 }

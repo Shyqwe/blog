@@ -1,0 +1,53 @@
+import { db, ensureSchema } from './_db.js';
+import { currentUser } from './_auth.js';
+
+export default async function handler(req, res) {
+  const sql = db();
+  await ensureSchema();
+
+  try {
+    // 读取某篇文章的评论
+    if (req.method === 'GET') {
+      const slug = String(req.query.slug || '');
+      if (!slug) return res.status(400).json({ error: '缺少 slug' });
+      const comments = await sql`
+        SELECT id, name, body, created_at
+        FROM comments
+        WHERE post_slug = ${slug}
+        ORDER BY created_at DESC
+      `;
+      return res.status(200).json(comments);
+    }
+
+    // 发表评论：需登录，昵称即用户名
+    if (req.method === 'POST') {
+      const user = await currentUser(req);
+      if (!user) return res.status(401).json({ error: '请先登录后再评论' });
+
+      const slug = String(req.body?.slug || '');
+      const text = String(req.body?.body || '').trim().slice(0, 2000);
+
+      // 蜜罐字段被填写 → 判定为机器人，假装成功即可
+      if (req.body?.website) return res.status(200).json({ ok: true });
+
+      if (!slug) return res.status(400).json({ error: '缺少 slug' });
+      if (!text) return res.status(400).json({ error: '评论内容不能为空' });
+
+      const posts = await sql`SELECT slug FROM posts WHERE slug = ${slug} AND published = true`;
+      if (!posts.length) return res.status(404).json({ error: '文章不存在' });
+
+      const rows = await sql`
+        INSERT INTO comments (post_slug, name, body, user_id)
+        VALUES (${slug}, ${user.username}, ${text}, ${user.id})
+        RETURNING id, name, body, created_at
+      `;
+      return res.status(201).json(rows[0]);
+    }
+
+    res.setHeader('Allow', 'GET, POST');
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: '服务器错误' });
+  }
+}
