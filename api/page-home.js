@@ -6,10 +6,12 @@ import { logVisit } from './_visits.js';
 
 /** 首页：整站登录墙，未登录跳 /login；列表、搜索、标签全部服务端渲染 */
 export default async function handler(req, res) {
-  const sql = db();
-  await ensureSchema();
+  // 先查会话：未登录直接跳走，不碰数据库（冷启动时省掉整段数据库等待）
   const user = await currentUser(req);
   if (!user) return redirectToLogin(res);
+
+  const sql = db();
+  await ensureSchema();
   await logVisit(req, user);
 
   try {
@@ -25,17 +27,19 @@ export default async function handler(req, res) {
       where = sql`${where} AND ${tag} = ANY(p.tags)`;
     }
 
-    const posts = await sql`
-      SELECT p.slug, p.title, p.created_at, u.username AS author
-      FROM posts p LEFT JOIN users u ON u.id = p.author_id
-      WHERE ${where}
-      ORDER BY p.created_at DESC
-    `;
-    const tags = await sql`
-      SELECT tag, count(*)::int AS count
-      FROM (SELECT unnest(tags) AS tag FROM posts WHERE published = true) t
-      GROUP BY tag ORDER BY count DESC, tag
-    `;
+    const [posts, tags] = await Promise.all([
+      sql`
+        SELECT p.slug, p.title, p.created_at, u.username AS author
+        FROM posts p LEFT JOIN users u ON u.id = p.author_id
+        WHERE ${where}
+        ORDER BY p.created_at DESC
+      `,
+      sql`
+        SELECT tag, count(*)::int AS count
+        FROM (SELECT unnest(tags) AS tag FROM posts WHERE published = true) t
+        GROUP BY tag ORDER BY count DESC, tag
+      `,
+    ]);
 
     const tagBar =
       (tag ? `<a class="tag" href="${q ? `/?q=${encodeURIComponent(q)}` : '/'}">全部</a>` : '') +

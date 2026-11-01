@@ -7,7 +7,9 @@
     { "source": "/posts", "destination": "/api/page-home" },
     { "source": "/", "destination": "/api/page-home" },
     { "source": "/archive", "destination": "/api/page-archive" },
-    { "source": "/about", "destination": "/api/page-about" }
+    { "source": "/about", "destination": "/api/page-about" },
+    { "source": "/my", "destination": "/api/page-my/posts" },
+    { "source": "/my/:what", "destination": "/api/page-my/:what" }
   ],
   "headers": [
     {

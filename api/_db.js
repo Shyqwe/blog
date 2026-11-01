@@ -64,9 +64,28 @@ export function ensureSchema() {
           created_at timestamptz NOT NULL DEFAULT now()
         )
       `;
-      // 老库迁移：文章作者、评论用户；账号字段已并入用户名
+      await sql`
+        CREATE TABLE IF NOT EXISTS likes (
+          id         serial PRIMARY KEY,
+          post_slug  text NOT NULL,
+          user_id    integer NOT NULL,
+          created_at timestamptz NOT NULL DEFAULT now(),
+          UNIQUE (post_slug, user_id)
+        )
+      `;
+      await sql`
+        CREATE TABLE IF NOT EXISTS comment_likes (
+          id         serial PRIMARY KEY,
+          comment_id integer NOT NULL,
+          user_id    integer NOT NULL,
+          created_at timestamptz NOT NULL DEFAULT now(),
+          UNIQUE (comment_id, user_id)
+        )
+      `;
+      // 老库迁移：文章作者、评论用户；账号字段已并入用户名；评论点赞计数
       await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS author_id integer`;
       await sql`ALTER TABLE comments ADD COLUMN IF NOT EXISTS user_id integer`;
+      await sql`ALTER TABLE comments ADD COLUMN IF NOT EXISTS likes integer NOT NULL DEFAULT 0`;
       await sql`ALTER TABLE users DROP COLUMN IF EXISTS account`;
       await sql`CREATE INDEX IF NOT EXISTS comments_post_slug_idx ON comments (post_slug)`;
       await sql`CREATE INDEX IF NOT EXISTS visits_created_at_idx ON visits (created_at DESC)`;

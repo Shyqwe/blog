@@ -6,23 +6,27 @@ import { logVisit } from './_visits.js';
 
 /** 归档页：标签云 + 按月分组，服务端渲染 */
 export default async function handler(req, res) {
-  const sql = db();
-  await ensureSchema();
+  // 先查会话：未登录直接跳走，不碰数据库（冷启动时省掉整段数据库等待）
   const user = await currentUser(req);
   if (!user) return redirectToLogin(res);
+
+  const sql = db();
+  await ensureSchema();
   await logVisit(req, user);
 
   try {
-    const posts = await sql`
-      SELECT p.slug, p.title, p.created_at
-      FROM posts p WHERE p.published = true
-      ORDER BY p.created_at DESC
-    `;
-    const tags = await sql`
-      SELECT tag, count(*)::int AS count
-      FROM (SELECT unnest(tags) AS tag FROM posts WHERE published = true) t
-      GROUP BY tag ORDER BY count DESC, tag
-    `;
+    const [posts, tags] = await Promise.all([
+      sql`
+        SELECT p.slug, p.title, p.created_at
+        FROM posts p WHERE p.published = true
+        ORDER BY p.created_at DESC
+      `,
+      sql`
+        SELECT tag, count(*)::int AS count
+        FROM (SELECT unnest(tags) AS tag FROM posts WHERE published = true) t
+        GROUP BY tag ORDER BY count DESC, tag
+      `,
+    ]);
 
     // 按月分组（zh-CN 格式化形如「2026年11月」）
     const groups = {};

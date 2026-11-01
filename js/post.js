@@ -19,12 +19,11 @@ function fmtDate(iso) {
   return new Date(iso).toLocaleDateString('zh-CN');
 }
 
-// 点赞：localStorage 防连点（服务端不做 IP 去重的简化实现）
-const likedKey = `liked:${slug}`;
+// 点赞：是否已赞由服务端渲染时下发（data-liked），一人一文一赞
 if (likeBtn) {
-  if (localStorage.getItem(likedKey)) likeBtn.disabled = true;
+  if (likeBtn.dataset.liked === '1') likeBtn.disabled = true;
   likeBtn.addEventListener('click', async () => {
-    if (localStorage.getItem(likedKey)) return;
+    if (likeBtn.disabled) return;
     likeBtn.disabled = true;
     try {
       const res = await fetch('/api/likes', {
@@ -32,10 +31,14 @@ if (likeBtn) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ slug }),
       });
+      if (res.status === 401) {
+        location.href = '/login';
+        return;
+      }
       if (!res.ok) throw new Error('failed');
       const { likes } = await res.json();
       likeCount.textContent = likes;
-      localStorage.setItem(likedKey, '1');
+      likeBtn.dataset.liked = '1';
     } catch {
       likeBtn.disabled = false;
     }
@@ -52,6 +55,7 @@ async function loadComments() {
       <div class="comment">
         <p class="comment-meta">
           <strong>${escapeHtml(c.name)}</strong> <time>${fmtDate(c.created_at)}</time>
+          <button class="comment-like" data-id="${c.id}" data-liked="${c.liked ? 1 : 0}" ${c.liked ? 'disabled' : ''}>👍 ${c.likes}</button>
           ${me?.is_admin ? `<button class="comment-del" data-id="${c.id}">删除</button>` : ''}
         </p>
         <p class="comment-body">${escapeHtml(c.body)}</p>
@@ -61,23 +65,47 @@ async function loadComments() {
     : '<p class="muted">还没有评论，来抢沙发～</p>';
 }
 
-// 管理员删除评论
+// 评论点赞
 commentList.addEventListener('click', async (e) => {
-  const btn = e.target.closest('.comment-del');
-  if (!btn) return;
-  if (!confirm('确定删除这条评论？')) return;
-  btn.disabled = true;
-  try {
-    const res = await fetch(`/api/comments?id=${btn.dataset.id}`, { method: 'DELETE' });
-    if (!res.ok) {
-      const { error } = await res.json().catch(() => ({}));
-      alert(error || '删除失败');
-      btn.disabled = false;
-    } else {
-      loadComments();
+  const likeBtnEl = e.target.closest('.comment-like');
+  if (likeBtnEl && likeBtnEl.dataset.liked !== '1') {
+    likeBtnEl.disabled = true;
+    try {
+      const res = await fetch('/api/comment-likes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: Number(likeBtnEl.dataset.id) }),
+      });
+      if (res.status === 401) {
+        location.href = '/login';
+        return;
+      }
+      if (!res.ok) throw new Error('failed');
+      const { likes } = await res.json();
+      likeBtnEl.textContent = `👍 ${likes}`;
+      likeBtnEl.dataset.liked = '1';
+    } catch {
+      likeBtnEl.disabled = false;
     }
-  } catch {
-    btn.disabled = false;
+    return;
+  }
+
+  const delBtn = e.target.closest('.comment-del');
+  if (delBtn) {
+    if (!confirm('确定删除这条评论？')) return;
+    delBtn.disabled = true;
+    try {
+      const res = await fetch(`/api/comments?id=${delBtn.dataset.id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const { error } = await res.json().catch(() => ({}));
+        alert(error || '删除失败');
+        delBtn.disabled = false;
+      } else {
+        loadComments();
+      }
+    } catch {
+      delBtn.disabled = false;
+    }
   }
 });
 

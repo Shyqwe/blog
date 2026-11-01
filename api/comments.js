@@ -6,16 +6,28 @@ export default async function handler(req, res) {
   await ensureSchema();
 
   try {
-    // 读取某篇文章的评论
+    // 读取某篇文章的评论（带点赞数与当前用户是否已赞）
     if (req.method === 'GET') {
       const slug = String(req.query.slug || '');
       if (!slug) return res.status(400).json({ error: '缺少 slug' });
       const comments = await sql`
-        SELECT id, name, body, created_at
+        SELECT id, name, body, likes, created_at
         FROM comments
         WHERE post_slug = ${slug}
         ORDER BY created_at DESC
       `;
+      const user = await currentUser(req);
+      if (user && comments.length) {
+        const liked = await sql`
+          SELECT comment_id FROM comment_likes
+          WHERE user_id = ${user.id}
+            AND comment_id = ANY(${comments.map((c) => c.id)})
+        `;
+        const likedSet = new Set(liked.map((r) => r.comment_id));
+        for (const c of comments) c.liked = likedSet.has(c.id);
+      } else {
+        for (const c of comments) c.liked = false;
+      }
       return res.status(200).json(comments);
     }
 

@@ -44,6 +44,12 @@ export default async function handler(req, res) {
       post.views += 1;
     }
 
+    // 当前用户是否已赞过这篇文章（服务端下发，替代原来的 localStorage 记忆）
+    const likedRows = await sql`
+      SELECT 1 FROM likes WHERE post_slug = ${post.slug} AND user_id = ${user.id}
+    `;
+    const liked = likedRows.length > 0;
+
     // markdown → HTML，再过滤掉危险标签，防 XSS
     const contentHtml = sanitizeHtml(marked.parse(post.content));
 
@@ -65,7 +71,7 @@ export default async function handler(req, res) {
       ${tagsHtml ? `<p class="post-tags">${tagsHtml}</p>` : ''}
       <div class="post-content">${contentHtml}</div>
       <div class="post-actions">
-        <button id="like-btn" data-slug="${esc(post.slug)}">👍 点赞 <span id="like-count">${post.likes}</span></button>
+        <button id="like-btn" data-slug="${esc(post.slug)}" data-liked="${liked ? 1 : 0}" ${liked ? 'disabled' : ''}>👍 点赞 <span id="like-count">${post.likes}</span></button>
       </div>
     </article>
 
