@@ -53,7 +53,7 @@ export async function currentUser(req) {
   if (!userId) return null;
   const sql = db();
   const rows = await sql`
-    SELECT id, account, username, is_admin, created_at
+    SELECT id, username, is_admin, created_at
     FROM users WHERE id = ${userId}
   `;
   return rows[0] || null;

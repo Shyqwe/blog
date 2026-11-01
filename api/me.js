@@ -8,8 +8,6 @@ export default async function handler(req, res) {
   }
   const user = await currentUser(req);
   return res.status(200).json({
-    user: user
-      ? { id: user.id, account: user.account, username: user.username, is_admin: user.is_admin }
-      : null,
+    user: user ? { id: user.id, username: user.username, is_admin: user.is_admin } : null,
   });
 }

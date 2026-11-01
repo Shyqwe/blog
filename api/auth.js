@@ -7,17 +7,17 @@ export default async function handler(req, res) {
     const sql = db();
     await ensureSchema();
 
-    const account = String(req.body?.account || '').trim();
+    const username = String(req.body?.username || '').trim();
     const password = String(req.body?.password || '');
-    if (!account || !password) {
-      return res.status(400).json({ error: '请输入账号和密码' });
+    if (!username || !password) {
+      return res.status(400).json({ error: '请输入用户名和密码' });
     }
 
-    const rows = await sql`SELECT * FROM users WHERE account = ${account}`;
+    const rows = await sql`SELECT * FROM users WHERE username = ${username}`;
     const user = rows[0];
-    // 不区分「账号不存在」和「密码错误」，避免被用来探测已注册账号
+    // 不区分「用户名不存在」和「密码错误」，避免被用来探测已注册用户
     if (!user || !verifyPasswordHash(password, user.password_hash)) {
-      return res.status(401).json({ error: '账号或密码错误' });
+      return res.status(401).json({ error: '用户名或密码错误' });
     }
 
     setSessionCookie(res, createSessionToken(user.id));

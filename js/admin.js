@@ -43,7 +43,7 @@ loginForm.addEventListener('submit', async (e) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        account: loginForm.account.value,
+        username: loginForm.username.value,
         password: loginForm.password.value,
       }),
     });

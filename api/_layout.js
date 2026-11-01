@@ -2,12 +2,13 @@ import { esc } from './_html.js';
 
 /** 公共页面骨架：所有需要登录的页面共用，user 为当前登录用户 */
 export function layout(title, bodyHtml, user = null) {
+  const fullTitle = title === '我的博客' ? title : `${esc(title)} - 我的博客`;
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${esc(title)} - 我的博客</title>
+  <title>${fullTitle}</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
