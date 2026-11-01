@@ -85,20 +85,10 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error('[render] 文章页出错:', err);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    // 临时诊断页：把真实错误直接显示出来，定位问题后换成友好提示
     return res.status(500).send(
       layout(
         '服务器错误',
-        `<main>
-          <h2>500</h2>
-          <p>服务器开小差了，请稍后再试。</p>
-          <p><a href="/">返回首页</a></p>
-          <h3>临时诊断信息（修复后移除）</h3>
-          <pre class="diag">${esc(err.stack || String(err))}</pre>
-        </main>
-        <style>
-          .diag { background: #f6f8fa; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.85em; white-space: pre-wrap; }
-        </style>`
+        '<main><h2>500</h2><p>服务器开小差了，请稍后再试。</p><p><a href="/">返回首页</a></p></main>'
       )
     );
   }
