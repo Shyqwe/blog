@@ -44,7 +44,22 @@ export default async function handler(req, res) {
       return res.status(201).json(rows[0]);
     }
 
-    res.setHeader('Allow', 'GET, POST');
+    // 删除评论：仅管理员
+    if (req.method === 'DELETE') {
+      const user = await currentUser(req);
+      if (!user) return res.status(401).json({ error: '请先登录' });
+      if (!user.is_admin) return res.status(403).json({ error: '仅管理员可删除评论' });
+
+      const id = Number(req.query.id);
+      if (!Number.isInteger(id) || id <= 0) {
+        return res.status(400).json({ error: '缺少评论 id' });
+      }
+      const rows = await sql`DELETE FROM comments WHERE id = ${id} RETURNING id`;
+      if (!rows.length) return res.status(404).json({ error: '评论不存在' });
+      return res.status(200).json({ ok: true });
+    }
+
+    res.setHeader('Allow', 'GET, POST, DELETE');
     return res.status(405).json({ error: 'Method Not Allowed' });
   } catch (err) {
     console.error(err);

@@ -79,6 +79,9 @@ async function init() {
     // 管理员看全部文章，普通用户只看自己的
     const posts = await jsonFetch(me.is_admin ? '/api/posts?all=1' : '/api/posts?mine=1');
     renderList(posts);
+
+    // 访问记录仅管理员可见
+    if (me.is_admin) loadVisits();
   } catch (err) {
     if (err.status === 401) {
       show(adminSection, false);
@@ -149,6 +152,30 @@ manageList.addEventListener('click', async (e) => {
     }
   }
 });
+
+// ---------- 访问记录（仅管理员） ----------
+
+async function loadVisits() {
+  const section = document.getElementById('visits-section');
+  try {
+    const v = await jsonFetch('/api/visits');
+    show(section, true);
+    document.getElementById('visit-stats').innerHTML =
+      `<span>总访问 <strong>${v.total}</strong></span><span>今日访问 <strong>${v.today}</strong></span>`;
+    document.getElementById('visit-rows').innerHTML = v.recent
+      .map(
+        (r) => `
+      <tr>
+        <td>${new Date(r.created_at).toLocaleString('zh-CN')}</td>
+        <td>${escapeHtml(r.username)}</td>
+        <td>${escapeHtml(r.path)}</td>
+      </tr>`
+      )
+      .join('');
+  } catch {
+    show(section, false); // 静默失败，不影响文章管理
+  }
+}
 
 // ---------- 编辑器 ----------
 

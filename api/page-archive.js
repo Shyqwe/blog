@@ -2,6 +2,7 @@ import { db, ensureSchema } from './_db.js';
 import { currentUser } from './_auth.js';
 import { layout, redirectToLogin } from './_layout.js';
 import { esc, fmtDate } from './_html.js';
+import { logVisit } from './_visits.js';
 
 /** 归档页：标签云 + 按月分组，服务端渲染 */
 export default async function handler(req, res) {
@@ -9,6 +10,7 @@ export default async function handler(req, res) {
   await ensureSchema();
   const user = await currentUser(req);
   if (!user) return redirectToLogin(res);
+  await logVisit(req, user);
 
   try {
     const posts = await sql`

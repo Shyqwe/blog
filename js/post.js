@@ -7,6 +7,8 @@ const likeCount = document.getElementById('like-count');
 const commentForm = document.getElementById('comment-form');
 const commentList = document.getElementById('comment-list');
 
+let me = null; // 当前登录用户，用于判断是否显示评论删除按钮
+
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => (
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
@@ -48,13 +50,36 @@ async function loadComments() {
         .map(
           (c) => `
       <div class="comment">
-        <p class="comment-meta"><strong>${escapeHtml(c.name)}</strong> <time>${fmtDate(c.created_at)}</time></p>
+        <p class="comment-meta">
+          <strong>${escapeHtml(c.name)}</strong> <time>${fmtDate(c.created_at)}</time>
+          ${me?.is_admin ? `<button class="comment-del" data-id="${c.id}">删除</button>` : ''}
+        </p>
         <p class="comment-body">${escapeHtml(c.body)}</p>
       </div>`
         )
         .join('')
     : '<p class="muted">还没有评论，来抢沙发～</p>';
 }
+
+// 管理员删除评论
+commentList.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.comment-del');
+  if (!btn) return;
+  if (!confirm('确定删除这条评论？')) return;
+  btn.disabled = true;
+  try {
+    const res = await fetch(`/api/comments?id=${btn.dataset.id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const { error } = await res.json().catch(() => ({}));
+      alert(error || '删除失败');
+      btn.disabled = false;
+    } else {
+      loadComments();
+    }
+  } catch {
+    btn.disabled = false;
+  }
+});
 
 if (commentForm) {
   commentForm.addEventListener('submit', async (e) => {
@@ -86,3 +111,14 @@ if (commentForm) {
 loadComments().catch(() => {
   commentList.innerHTML = '<p class="muted">评论加载失败。</p>';
 });
+
+// 先拿到当前用户身份，再刷新一次评论列表以显示管理员的删除按钮
+fetch('/api/me')
+  .then((r) => r.json())
+  .then(({ user }) => {
+    if (user?.is_admin) {
+      me = user;
+      loadComments();
+    }
+  })
+  .catch(() => {});

@@ -55,11 +55,21 @@ export function ensureSchema() {
           created_at timestamptz NOT NULL DEFAULT now()
         )
       `;
+      await sql`
+        CREATE TABLE IF NOT EXISTS visits (
+          id         serial PRIMARY KEY,
+          user_id    integer,
+          username   text NOT NULL DEFAULT '未知',
+          path       text NOT NULL,
+          created_at timestamptz NOT NULL DEFAULT now()
+        )
+      `;
       // 老库迁移：文章作者、评论用户；账号字段已并入用户名
       await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS author_id integer`;
       await sql`ALTER TABLE comments ADD COLUMN IF NOT EXISTS user_id integer`;
       await sql`ALTER TABLE users DROP COLUMN IF EXISTS account`;
       await sql`CREATE INDEX IF NOT EXISTS comments_post_slug_idx ON comments (post_slug)`;
+      await sql`CREATE INDEX IF NOT EXISTS visits_created_at_idx ON visits (created_at DESC)`;
     })().catch((err) => {
       schemaReady = null; // 失败后允许下次请求重试
       throw err;

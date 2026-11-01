@@ -1,10 +1,12 @@
 import { currentUser } from './_auth.js';
 import { layout, redirectToLogin } from './_layout.js';
+import { logVisit } from './_visits.js';
 
 /** 关于页：内容固定，仅做登录墙 */
 export default async function handler(req, res) {
   const user = await currentUser(req);
   if (!user) return redirectToLogin(res);
+  await logVisit(req, user);
 
   const body = `
   <main>

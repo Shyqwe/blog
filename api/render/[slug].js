@@ -2,6 +2,7 @@ import { db, ensureSchema } from '../_db.js';
 import { currentUser } from '../_auth.js';
 import { layout, redirectToLogin } from '../_layout.js';
 import { esc, fmtDate } from '../_html.js';
+import { logVisit } from '../_visits.js';
 
 /**
  * 文章阅读页：/posts/:slug 经 vercel.json rewrite 到这里。
@@ -16,6 +17,7 @@ export default async function handler(req, res) {
     await ensureSchema();
     const user = await currentUser(req);
     if (!user) return redirectToLogin(res);
+    await logVisit(req, user);
 
     const slug = String(req.query.slug || '');
     const { marked } = await import('marked');
