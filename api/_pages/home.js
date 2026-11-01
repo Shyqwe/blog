@@ -1,8 +1,8 @@
-import { db, ensureSchema } from './_db.js';
-import { currentUser } from './_auth.js';
-import { layout, redirectToLogin } from './_layout.js';
-import { esc, fmtDate } from './_html.js';
-import { logVisit } from './_visits.js';
+import { db, ensureSchema } from '../_db.js';
+import { currentUser } from '../_auth.js';
+import { layout, redirectToLogin } from '../_layout.js';
+import { esc, fmtDate } from '../_html.js';
+import { logVisit } from '../_visits.js';
 
 /** 首页：整站登录墙，未登录跳 /login；列表、搜索、标签全部服务端渲染 */
 export default async function handler(req, res) {

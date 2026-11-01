@@ -4,12 +4,12 @@
   "trailingSlash": false,
   "rewrites": [
     { "source": "/posts/:slug", "destination": "/api/render/:slug" },
-    { "source": "/posts", "destination": "/api/page-home" },
-    { "source": "/", "destination": "/api/page-home" },
-    { "source": "/archive", "destination": "/api/page-archive" },
-    { "source": "/about", "destination": "/api/page-about" },
-    { "source": "/my", "destination": "/api/page-my/posts" },
-    { "source": "/my/:what", "destination": "/api/page-my/:what" }
+    { "source": "/posts", "destination": "/api/page?p=home" },
+    { "source": "/", "destination": "/api/page?p=home" },
+    { "source": "/archive", "destination": "/api/page?p=archive" },
+    { "source": "/about", "destination": "/api/page?p=about" },
+    { "source": "/my", "destination": "/api/page?p=my&what=posts" },
+    { "source": "/my/:what", "destination": "/api/page?p=my&what=:what" }
   ],
   "headers": [
     {
