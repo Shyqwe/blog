@@ -62,7 +62,7 @@ export default async function handler(req, res) {
       ${tag ? `<input type="hidden" name="tag" value="${esc(tag)}">` : ''}
       <input type="search" name="q" value="${esc(q)}" placeholder="搜索文章…">
     </form>
-    <div class="tag-bar">${tagBar}</div>
+    ${tags.length ? `<div class="tag-bar">${tagBar}</div>` : ''}
     <ul class="post-list">${list}</ul>
     ${posts.length ? '' : '<p class="muted">没有找到匹配的文章。</p>'}
   </main>`;

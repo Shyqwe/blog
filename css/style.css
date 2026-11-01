@@ -153,24 +153,37 @@ textarea {
 
 .stack {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
-.stack input,
+.stack input:not([type="checkbox"]),
 .stack textarea {
   width: 100%;
-}
-
-.error {
-  color: #c0392b;
-  margin: 0;
-  min-height: 1.2em;
 }
 
 .check {
   display: flex;
   gap: 8px;
   align-items: center;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+/* 编辑器表单：限制宽度保证正文可读性，所有输入框左缘对齐 */
+#editor-section .stack {
+  max-width: 620px;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.error {
+  color: #c0392b;
+  margin: 0;
+  min-height: 1.2em;
 }
 
 .row-actions {

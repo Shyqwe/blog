@@ -166,7 +166,6 @@ async function openEditor(slug) {
       const p = await jsonFetch(`/api/posts/${encodeURIComponent(slug)}`);
       editorForm.title.value = p.title;
       editorForm.slug.value = p.slug;
-      editorForm.tags.value = p.tags.join(', ');
       editorForm.published.checked = p.published;
       editorForm.content.value = p.content;
     } catch (err) {
@@ -187,7 +186,6 @@ editorForm.addEventListener('submit', async (e) => {
   const payload = {
     title: editorForm.title.value,
     slug: editorForm.slug.value,
-    tags: editorForm.tags.value,
     published: editorForm.published.checked,
     content: editorForm.content.value,
   };

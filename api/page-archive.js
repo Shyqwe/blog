@@ -62,8 +62,7 @@ export default async function handler(req, res) {
 
     const body = `
   <main>
-    <h2>标签</h2>
-    <div class="tag-bar">${tagCloud}</div>
+    ${tags.length ? `<h2>标签</h2>\n    <div class="tag-bar">${tagCloud}</div>` : ''}
     <h2>归档</h2>
     ${archive}
   </main>`;
