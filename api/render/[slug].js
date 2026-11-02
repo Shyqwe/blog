@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     if (!canPreview) {
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.status(404).send(
-        layout('文章不存在', '<main><h2>404</h2><p>文章不存在或未发布。</p><p><a href="/">返回首页</a></p></main>', user)
+        layout('文章不存在', '<h2>404</h2><p>文章不存在或未发布。</p><p><a href="/">返回首页</a></p>', user)
       );
     }
 
@@ -60,7 +60,6 @@ export default async function handler(req, res) {
       : '';
 
     const body = `
-  <main>
     <article class="post">
       <h1 class="post-title">${esc(post.title)}</h1>
       <p class="post-meta">
@@ -85,7 +84,6 @@ export default async function handler(req, res) {
       </form>
       <div id="comment-list">加载中…</div>
     </section>
-  </main>
   <script src="/js/post.js" defer></script>`;
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -96,7 +94,7 @@ export default async function handler(req, res) {
     return res.status(500).send(
       layout(
         '服务器错误',
-        '<main><h2>500</h2><p>服务器开小差了，请稍后再试。</p><p><a href="/">返回首页</a></p></main>'
+        '<h2>500</h2><p>服务器开小差了，请稍后再试。</p><p><a href="/">返回首页</a></p>'
       )
     );
   }

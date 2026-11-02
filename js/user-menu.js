@@ -1,3 +1,28 @@
+// 侧边栏：折叠/展开（桌面收起为纯内容区，手机端为抽屉）
+const toggle = document.getElementById('sidebar-toggle');
+const backdrop = document.getElementById('sidebar-backdrop');
+const html = document.documentElement;
+
+if (toggle) {
+  const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
+
+  toggle.addEventListener('click', () => {
+    if (isMobile()) {
+      // 手机：开关抽屉
+      html.classList.toggle('sb-open');
+    } else {
+      // 桌面：折叠/展开，状态记住
+      html.classList.toggle('sb-collapsed');
+      try {
+        localStorage.setItem('sidebar', html.classList.contains('sb-collapsed') ? 'collapsed' : 'open');
+      } catch {}
+    }
+  });
+
+  // 手机：点遮罩关抽屉
+  backdrop.addEventListener('click', () => html.classList.remove('sb-open'));
+}
+
 // 头像下拉菜单：点击切换、点击别处收起、设置二级面板、深色模式、退出登录
 
 const menu = document.getElementById('user-menu');

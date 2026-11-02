@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   const title = TITLES[what];
   if (!title) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(404).send(layout('页面不存在', '<main><h2>404</h2><p><a href="/">返回首页</a></p></main>', user));
+    return res.status(404).send(layout('页面不存在', '<h2>404</h2><p><a href="/">返回首页</a></p>', user));
   }
 
   try {
@@ -117,16 +117,14 @@ export default async function handler(req, res) {
     }
 
     const body = `
-  <main>
     <h2>${esc(title)}</h2>
-    ${listHtml}
-  </main>`;
+    ${listHtml}`;
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     return res.status(200).send(layout(title, body, user));
   } catch (err) {
     console.error(err);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(500).send(layout('服务器错误', '<main><h2>500</h2><p>服务器开小差了，请稍后再试。</p></main>', user));
+    return res.status(500).send(layout('服务器错误', '<h2>500</h2><p>服务器开小差了，请稍后再试。</p>', user));
   }
 }

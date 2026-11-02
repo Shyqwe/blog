@@ -9,40 +9,66 @@ function avatarColor(username) {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
-/** 在页面渲染前应用本地保存的主题，避免深色模式闪白 */
-const THEME_SCRIPT = `<script>
+/** 在页面渲染前应用本地保存的主题与侧边栏折叠状态，避免闪烁 */
+const HEAD_SCRIPT = `<script>
   (function () {
     try {
       if (localStorage.getItem('theme') === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
+      if (localStorage.getItem('sidebar') === 'collapsed') {
+        document.documentElement.classList.add('sb-collapsed');
+      }
     } catch (e) {}
   })();
 </script>`;
 
-/** 公共页面骨架：所有需要登录的页面共用，user 为当前登录用户 */
-export function layout(title, bodyHtml, user = null) {
+/**
+ * 公共页面骨架：左侧边栏（搜索 + 导航 + 头像）+ 右侧主区域。
+ * opts.active    当前导航项（'/' | '/archive' | '/about'），用于高亮
+ * opts.search    侧边栏搜索框的预填关键词（首页搜索结果页用）
+ */
+export function layout(title, bodyHtml, user = null, opts = {}) {
   const fullTitle = title === '我的博客' ? title : `${esc(title)} - 我的博客`;
   const firstChar = user ? [...String(user.username).trim()][0] || '?' : '';
+  const active = opts.active || '';
+  const search = esc(opts.search || '');
+  const navLink = (href, icon, label) =>
+    `<a href="${href}" class="side-link${active === href ? ' active' : ''}">${icon} ${label}</a>`;
+
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${fullTitle}</title>
-  ${THEME_SCRIPT}
+  ${HEAD_SCRIPT}
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <header class="site-header">
-    <h1><a href="/">我的博客</a></h1>
-    <nav>
-      <a href="/">首页</a>
-      <a href="/archive">归档</a>
-      <a href="/about">关于</a>
-      <a href="/admin" class="nav-cta">✏️ 写文章</a>${
-        user
-          ? `
+  <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="收起/展开侧边栏"></button>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <a class="blog-title" href="/">📝 我的博客</a>
+    </div>
+
+    <form class="sidebar-search" method="get" action="/">
+      <input type="search" name="q" placeholder="搜索文章…" value="${search}">
+    </form>
+
+    <nav class="sidebar-nav">
+      ${navLink('/', '🏠', '首页')}
+      ${navLink('/archive', '📅', '归档')}
+      ${navLink('/about', '👤', '关于')}
+      <a href="/admin" class="side-link side-cta">✏️ 写文章</a>
+      ${user?.is_admin ? '<a href="/admin" class="side-link">📊 管理</a>' : ''}
+    </nav>
+
+    <div class="sidebar-foot">${
+      user
+        ? `
       <div class="user-menu" id="user-menu">
         <button class="user-chip" type="button" title="${esc(user.username)}">
           <span class="avatar" style="background:${avatarColor(user.username)}">${esc(firstChar)}</span>
@@ -67,15 +93,14 @@ export function layout(title, bodyHtml, user = null) {
           </div>
         </div>
       </div>`
-          : ''
-      }
-    </nav>
-  </header>
-  ${bodyHtml}
-  <footer class="site-footer">
-    <span class="muted">${user ? `${esc(user.username)} 已登录` : ''}</span>
-    ${user?.is_admin ? '<a href="/admin">管理</a>' : ''}
-  </footer>
+        : ''
+    }
+    </div>
+  </aside>
+
+  <main class="page-main">
+    ${bodyHtml}
+  </main>
   <script src="/js/user-menu.js" defer></script>
 </body>
 </html>`;

@@ -67,17 +67,15 @@ export default async function handler(req, res) {
       : '<p class="muted">还没有文章。</p>';
 
     const body = `
-  <main>
     ${tags.length ? `<h2>标签</h2>\n    <div class="tag-bar">${tagCloud}</div>` : ''}
     <h2>归档</h2>
-    ${archive}
-  </main>`;
+    ${archive}`;
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(200).send(layout('归档', body, user));
+    return res.status(200).send(layout('归档', body, user, { active: '/archive' }));
   } catch (err) {
     console.error(err);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(500).send(layout('服务器错误', '<main><h2>500</h2><p>服务器开小差了，请稍后再试。</p></main>', user));
+    return res.status(500).send(layout('服务器错误', '<h2>500</h2><p>服务器开小差了，请稍后再试。</p>', user));
   }
 }

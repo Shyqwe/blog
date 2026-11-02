@@ -27,28 +27,12 @@ export default async function handler(req, res) {
       where = sql`${where} AND ${tag} = ANY(p.tags)`;
     }
 
-    const [posts, tags] = await Promise.all([
-      sql`
-        SELECT p.slug, p.title, p.created_at, u.username AS author
-        FROM posts p LEFT JOIN users u ON u.id = p.author_id
-        WHERE ${where}
-        ORDER BY p.created_at DESC
-      `,
-      sql`
-        SELECT tag, count(*)::int AS count
-        FROM (SELECT unnest(tags) AS tag FROM posts WHERE published = true) t
-        GROUP BY tag ORDER BY count DESC, tag
-      `,
-    ]);
-
-    const tagBar =
-      (tag ? `<a class="tag" href="${q ? `/?q=${encodeURIComponent(q)}` : '/'}">全部</a>` : '') +
-      tags
-        .map(
-          (t) =>
-            `<a class="tag${t.tag === tag ? ' active' : ''}" href="/?tag=${encodeURIComponent(t.tag)}${q ? `&q=${encodeURIComponent(q)}` : ''}">${esc(t.tag)} (${t.count})</a>`
-        )
-        .join('');
+    const posts = await sql`
+      SELECT p.slug, p.title, p.created_at, u.username AS author
+      FROM posts p LEFT JOIN users u ON u.id = p.author_id
+      WHERE ${where}
+      ORDER BY p.created_at DESC
+    `;
 
     const list = posts.length
       ? posts
@@ -62,22 +46,21 @@ export default async function handler(req, res) {
           .join('')
       : '';
 
+    // 标签云在归档页；筛选/搜索时在这里给一条提示，首页正文只保留文章列表
+    const notices =
+      (tag ? `<p class="filter-notice">标签「${esc(tag)}」 · <a href="${q ? `/?q=${encodeURIComponent(q)}` : '/'}">清除筛选</a></p>` : '') +
+      (q ? `<p class="filter-notice">搜索「${esc(q)}」：共 ${posts.length} 篇</p>` : '');
+
     const body = `
-  <main>
-    <form class="toolbar" method="get" action="/">
-      ${tag ? `<input type="hidden" name="tag" value="${esc(tag)}">` : ''}
-      <input type="search" name="q" value="${esc(q)}" placeholder="搜索文章…">
-    </form>
-    ${tags.length ? `<div class="tag-bar">${tagBar}</div>` : ''}
-    <ul class="post-list">${list}</ul>
-    ${posts.length ? '' : '<p class="muted">没有找到匹配的文章。</p>'}
-  </main>`;
+  ${notices}
+  <ul class="post-list">${list}</ul>
+  ${posts.length ? '' : '<p class="muted">没有找到匹配的文章。</p>'}`;
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(200).send(layout('我的博客', body, user));
+    return res.status(200).send(layout('我的博客', body, user, { active: '/', search: q }));
   } catch (err) {
     console.error(err);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(500).send(layout('服务器错误', '<main><h2>500</h2><p>服务器开小差了，请稍后再试。</p></main>', user));
+    return res.status(500).send(layout('服务器错误', '<h2>500</h2><p>服务器开小差了，请稍后再试。</p>', user));
   }
 }

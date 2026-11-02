@@ -34,14 +34,34 @@
 }
 
 body {
-  margin: 0 auto;
-  max-width: 720px;
-  padding: 0 20px;
+  margin: 0;
   font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
   line-height: 1.7;
   color: var(--text-color);
   background: var(--bg-color);
   transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* 静态页（登录/注册/管理）没有侧边栏，用居中版式 */
+body.centered {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 静态页的简化顶栏 */
+body.centered .site-header {
+  padding: 30px 0 10px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 30px;
+}
+
+body.centered .site-header h1 {
+  margin: 0 0 10px;
+}
+
+body.centered .site-header nav a {
+  margin-right: 15px;
 }
 
 a {
@@ -53,54 +73,178 @@ a:hover {
   text-decoration: underline;
 }
 
-.site-header {
-  padding: 30px 0 10px;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 30px;
+/* ---------- 左侧边栏 ---------- */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 232px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 14px;
+  background: var(--bg-color);
+  border-right: 1px solid var(--border-color);
+  transition: transform 0.2s ease, background-color 0.15s ease;
+  z-index: 40;
+  overflow-y: auto;
 }
 
-.site-header h1 {
-  margin: 0 0 10px;
-}
-
-.site-header nav a {
-  margin-right: 15px;
-}
-
-/* 顶部导航里的「写文章」按钮，做成显眼的主操作 */
-.site-header nav .nav-cta {
-  padding: 3px 12px;
-  border: 1px solid var(--accent-color);
-  border-radius: 999px;
-}
-
-/* ---------- 右上角头像菜单 ---------- */
-
-.site-header nav {
+.sidebar-head {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  min-height: 34px;
+  padding-left: 42px; /* 给左上角的折叠按钮留位置 */
 }
+
+.blog-title {
+  color: var(--text-color);
+  font-size: 1.05em;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.blog-title:hover {
+  text-decoration: none;
+  color: var(--accent-color);
+}
+
+.sidebar-search input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  font: inherit;
+  background: var(--surface);
+  color: var(--text-color);
+}
+
+.sidebar-search input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.side-link {
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.side-link:hover {
+  background: var(--surface-hover);
+  text-decoration: none;
+}
+
+.side-link.active {
+  background: var(--surface-hover);
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.side-cta {
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+  text-align: center;
+  margin-top: 6px;
+}
+
+.sidebar-foot {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* 折叠按钮：固定在左上角，图标随状态变化 */
+.sidebar-toggle {
+  position: fixed;
+  top: 18px;
+  left: 14px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--text-color);
+  font-size: 1.05em;
+  z-index: 50;
+}
+
+.sidebar-toggle::before {
+  content: "«";
+}
+
+html.sb-collapsed .sidebar-toggle::before {
+  content: "☰";
+}
+
+.sidebar-toggle:hover {
+  background: var(--surface-hover);
+}
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 39;
+}
+
+html.sb-collapsed .sidebar {
+  transform: translateX(-100%);
+}
+
+html.sb-collapsed .page-main {
+  margin: 0 auto; /* 收起边栏后内容区恢复居中 */
+}
+
+/* ---------- 右侧主区域 ---------- */
+
+.page-main {
+  margin-left: 232px;
+  padding: 30px 24px 40px;
+  max-width: 800px;
+  min-height: 100vh;
+}
+
+/* ---------- 右上角头像菜单（挂在侧边栏底部） ---------- */
 
 .user-menu {
   position: relative;
-  margin-left: auto;
 }
 
 .user-chip {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
   border: none;
   background: none;
-  padding: 4px 6px;
-  border-radius: 999px;
+  padding: 6px 8px;
+  border-radius: 8px;
   cursor: pointer;
   color: var(--text-color);
 }
 
 .user-chip:hover {
   background: var(--surface-hover);
+}
+
+.user-chip .user-name {
+  text-align: left;
 }
 
 .avatar {
@@ -123,18 +267,19 @@ a:hover {
   white-space: nowrap;
 }
 
+/* 下拉面板从头像右侧弹出 */
 .user-dropdown {
   display: none;
   position: absolute;
-  right: 0;
-  top: calc(100% + 6px);
-  min-width: 150px;
+  left: calc(100% + 8px);
+  bottom: 0;
+  min-width: 160px;
   background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   padding: 6px 0;
-  z-index: 20;
+  z-index: 60;
 }
 
 .user-menu.open .user-dropdown {
@@ -259,8 +404,19 @@ a:hover {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 12px 0;
+  gap: 12px;
+  padding: 12px 10px;
   border-bottom: 1px solid var(--muted-border);
+  border-radius: 8px;
+  transition: background-color 0.12s ease;
+}
+
+.post-list li:hover {
+  background: var(--surface-hover);
+}
+
+.post-list li a {
+  flex: 1; /* 标题占满剩余空间，整行都是点击目标 */
 }
 
 time {
@@ -293,6 +449,15 @@ time {
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 20px;
+}
+
+.filter-notice {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  background: var(--surface-hover);
+  border-radius: 8px;
+  font-size: 0.92em;
+  color: var(--secondary-color);
 }
 
 .tag {
@@ -581,15 +746,38 @@ textarea:focus {
   border-top: 1px solid var(--border-color);
 }
 
-/* ---------- 归档与页脚 ---------- */
+/* ---------- 归档 ---------- */
 
 .archive-month h2 {
   margin-bottom: 5px;
 }
 
-.site-footer {
-  margin: 40px 0 20px;
-  padding-top: 15px;
-  border-top: 1px solid var(--border-color);
-  font-size: 0.9em;
+/* ---------- 移动端：侧边栏变抽屉 ---------- */
+
+@media (max-width: 900px) {
+  .page-main {
+    margin-left: 0 !important;
+  }
+
+  .sidebar {
+    transform: translateX(-100%) !important;
+    box-shadow: none;
+  }
+
+  html.sb-open .sidebar {
+    transform: translateX(0) !important;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+  }
+
+  html.sb-open .sidebar-backdrop {
+    display: block;
+  }
+
+  .sidebar-toggle::before {
+    content: "☰";
+  }
+
+  html.sb-open .sidebar-toggle::before {
+    content: "✕";
+  }
 }

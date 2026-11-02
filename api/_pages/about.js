@@ -9,11 +9,9 @@ export default async function handler(req, res) {
   await logVisit(req, user);
 
   const body = `
-  <main>
     <h2>关于我</h2>
-    <p>前端初学者，正在通过手写页面练习 HTML 和 CSS。</p>
-  </main>`;
+    <p>前端初学者，正在通过手写页面练习 HTML 和 CSS。</p>`;
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  return res.status(200).send(layout('关于', body, user));
+  return res.status(200).send(layout('关于', body, user, { active: '/about' }));
 }
