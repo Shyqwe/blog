@@ -58,11 +58,12 @@ export function layout(title, bodyHtml, user = null, opts = {}) {
       <input type="search" name="q" placeholder="搜索文章…" value="${search}">
     </form>
 
+    <a href="/admin" class="side-link side-cta">✏️ 写文章</a>
+
     <nav class="sidebar-nav">
       ${navLink('/', '🏠', '首页')}
       ${navLink('/archive', '📅', '归档')}
       ${navLink('/about', '👤', '关于')}
-      <a href="/admin" class="side-link side-cta">✏️ 写文章</a>
       ${user?.is_admin ? '<a href="/admin" class="side-link">📊 管理</a>' : ''}
     </nav>
 
