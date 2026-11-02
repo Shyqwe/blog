@@ -47,17 +47,17 @@ if (menu) {
     menu.classList.remove('settings-open');
   });
 
-  // 深色模式：偏好存 localStorage，切换立即生效
+  // 深色模式：默认开启（:root 即赛博朋克主题），关闭则切到浅色
   const themeSwitch = document.getElementById('theme-switch');
-  themeSwitch.checked = document.documentElement.getAttribute('data-theme') === 'dark';
+  themeSwitch.checked = document.documentElement.getAttribute('data-theme') !== 'light';
   themeSwitch.addEventListener('change', () => {
     if (themeSwitch.checked) {
-      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.removeAttribute('data-theme');
       try {
         localStorage.setItem('theme', 'dark');
       } catch {}
     } else {
-      document.documentElement.removeAttribute('data-theme');
+      document.documentElement.setAttribute('data-theme', 'light');
       try {
         localStorage.setItem('theme', 'light');
       } catch {}

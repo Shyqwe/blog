@@ -13,8 +13,9 @@ function avatarColor(username) {
 const HEAD_SCRIPT = `<script>
   (function () {
     try {
-      if (localStorage.getItem('theme') === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
+      // 默认就是赛博朋克深色（:root）；只有用户显式选过浅色才切换
+      if (localStorage.getItem('theme') === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
       }
       if (localStorage.getItem('sidebar') === 'collapsed') {
         document.documentElement.classList.add('sb-collapsed');

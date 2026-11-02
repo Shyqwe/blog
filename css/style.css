@@ -1,10 +1,42 @@
-/* ========== 设计变量 ========== */
+/* ============================================================
+   CYBERPUNK 2077 主题
+   :root = 赛博朋克深色（默认）；[data-theme="light"] = 浅色备选
+   ============================================================ */
 
 :root {
+  --text-color: #e8ecf8;
+  --bg-color: #05070d;
+  --accent-color: #00f0ff; /* 霓虹青 */
+  --accent-2: #ff2a6d; /* 品红 */
+  --neon-yellow: #ffd319; /* 2077 招牌黄 */
+  --on-accent: #03181c;
+  --on-yellow: #241c00;
+  --secondary-color: #8b93ad;
+  --border-color: #1c2438;
+  --border-strong: #35436b;
+  --muted-border: #141b2e;
+  --surface: #0a0f1d;
+  --surface-hover: #131c33;
+  --code-bg: #0e1628;
+  --danger-color: #ff2a6d;
+  --glow: rgba(0, 240, 255, 0.35);
+  --glow-yellow: rgba(255, 211, 25, 0.4);
+  --glow-pink: rgba(255, 42, 109, 0.35);
+  --mono: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+  /* 2077 式切角：右上、左下斜切 */
+  --cut: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  color-scheme: dark;
+}
+
+/* 浅色备选：纸感粗野主义 */
+[data-theme="light"] {
   --text-color: #16181d;
   --bg-color: #e9e9e6;
   --accent-color: #2f54eb;
+  --accent-2: #d32029;
+  --neon-yellow: #f5c518;
   --on-accent: #ffffff;
+  --on-yellow: #241c00;
   --secondary-color: #6b6f7a;
   --border-color: #d9d9d4;
   --border-strong: #b4b4ac;
@@ -14,28 +46,9 @@
   --code-bg: #eceee9;
   --danger-color: #d32029;
   --glow: rgba(47, 84, 235, 0.22);
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --mono: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+  --glow-yellow: rgba(245, 197, 24, 0.35);
+  --glow-pink: rgba(211, 32, 41, 0.25);
   color-scheme: light;
-}
-
-/* 深色模式 = 赛博朋克主题：深海军蓝底 + 青色霓虹 + 品红点缀 */
-[data-theme="dark"] {
-  --text-color: #d7e0f5;
-  --bg-color: #070b16;
-  --accent-color: #00e5ff;
-  --on-accent: #032830;
-  --secondary-color: #7c86a2;
-  --border-color: #1a2338;
-  --border-strong: #2c3a5c;
-  --muted-border: #141c30;
-  --surface: #0c1322;
-  --surface-hover: #141f38;
-  --code-bg: #101a2e;
-  --danger-color: #ff5470;
-  --glow: rgba(0, 229, 255, 0.32);
-  --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
-  color-scheme: dark;
 }
 
 * {
@@ -43,11 +56,11 @@
 }
 
 ::selection {
-  background: var(--accent-color);
-  color: var(--on-accent);
+  background: var(--neon-yellow);
+  color: #111;
 }
 
-/* 细滚动条（WebKit） */
+/* 细霓虹滚动条 */
 ::-webkit-scrollbar {
   width: 9px;
   height: 9px;
@@ -73,28 +86,33 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* 深色模式下的氛围背景：霓虹网格 + 两团辉光 */
-[data-theme="dark"] body::before {
+/* 氛围背景：青色网格 + 青/品红两团辉光 */
+body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(0, 229, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 255, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
   background-size: 44px 44px;
 }
 
-[data-theme="dark"] body::after {
+body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(620px 400px at 88% -8%, rgba(0, 229, 255, 0.12), transparent 62%),
-    radial-gradient(720px 520px at -12% 108%, rgba(255, 45, 149, 0.08), transparent 62%);
+    radial-gradient(640px 420px at 90% -10%, rgba(0, 240, 255, 0.13), transparent 62%),
+    radial-gradient(760px 540px at -15% 110%, rgba(255, 42, 109, 0.1), transparent 62%);
+}
+
+[data-theme="light"] body::before,
+[data-theme="light"] body::after {
+  display: none;
 }
 
 /* 静态页（登录/注册/管理）没有侧边栏，用居中版式 */
@@ -122,11 +140,12 @@ body.centered .site-header nav a {
 a {
   color: var(--accent-color);
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: color 0.15s ease, text-shadow 0.15s ease;
 }
 
 a:hover {
-  text-decoration: underline;
+  text-decoration: none;
+  text-shadow: 0 0 10px var(--glow);
 }
 
 /* ---------- 左侧边栏 ---------- */
@@ -143,6 +162,7 @@ a:hover {
   padding: 18px 14px;
   background: var(--bg-color);
   border-right: 1px solid var(--border-color);
+  box-shadow: 1px 0 24px rgba(0, 0, 0, 0.35);
   transition: transform 0.2s ease, background-color 0.2s ease;
   z-index: 40;
   overflow-y: auto;
@@ -155,36 +175,44 @@ a:hover {
   padding-left: 42px; /* 给左上角的折叠按钮留位置 */
 }
 
+/* 博客名：色差故障感（青/品红重影） */
 .blog-title {
   color: var(--text-color);
-  font-size: 1.05em;
+  font-size: 1.08em;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-shadow:
+    2px 0 0 rgba(255, 42, 109, 0.55),
+    -2px 0 0 rgba(0, 240, 255, 0.55);
+}
+
+[data-theme="light"] .blog-title {
+  text-shadow: none;
 }
 
 .blog-title:hover {
-  text-decoration: none;
   color: var(--accent-color);
 }
 
 .sidebar-search input {
   width: 100%;
-  padding: 8px 12px;
+  padding: 9px 12px;
   border: 1px solid var(--border-strong);
-  border-radius: 8px;
+  clip-path: var(--cut);
   font: inherit;
+  caret-color: var(--accent-color);
   background: var(--surface);
   color: var(--text-color);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, filter 0.15s ease;
 }
 
 .sidebar-search input:focus {
   outline: none;
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px var(--glow), 0 0 14px var(--glow);
+  filter: drop-shadow(0 0 8px var(--glow));
 }
 
 .sidebar-nav {
@@ -196,10 +224,10 @@ a:hover {
 .side-link {
   position: relative;
   padding: 9px 12px;
-  border-radius: 8px;
   color: var(--text-color);
+  letter-spacing: 2px;
   white-space: nowrap;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 /* 导航项左侧的霓虹指示条 */
@@ -210,16 +238,16 @@ a:hover {
   top: 8px;
   bottom: 8px;
   width: 3px;
-  border-radius: 2px;
   background: var(--accent-color);
+  box-shadow: 0 0 8px var(--glow);
   transform: scaleY(0);
   transition: transform 0.15s ease;
 }
 
 .side-link:hover {
   background: var(--surface-hover);
-  text-decoration: none;
   color: var(--accent-color);
+  transform: translateX(4px);
 }
 
 .side-link:hover::before {
@@ -230,22 +258,23 @@ a:hover {
   background: var(--surface-hover);
   color: var(--accent-color);
   font-weight: 700;
-  text-shadow: 0 0 14px var(--glow);
+  text-shadow: 0 0 12px var(--glow);
 }
 
 .side-link.active::before {
   transform: scaleY(1);
 }
 
-/* 「写文章」实心霓虹按钮 */
+/* 「写文章」2077 招牌黄实心按钮 */
 .side-cta {
-  background: var(--accent-color);
-  color: var(--on-accent);
-  border: 1px solid var(--accent-color);
-  font-weight: 700;
-  letter-spacing: 2px;
+  background: var(--neon-yellow);
+  color: var(--on-yellow);
+  border: 1px solid var(--neon-yellow);
+  clip-path: var(--cut);
+  font-weight: 800;
+  letter-spacing: 4px;
   text-align: center;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: filter 0.15s ease, transform 15ms ease;
 }
 
 .side-cta::before {
@@ -253,11 +282,14 @@ a:hover {
 }
 
 .side-cta:hover {
+  filter: drop-shadow(0 0 12px var(--glow-yellow));
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px var(--glow), 0 0 18px var(--glow);
-  text-decoration: none;
-  color: var(--on-accent);
-  background: var(--accent-color);
+  color: var(--on-yellow);
+  background: var(--neon-yellow);
+}
+
+.side-cta:active {
+  transform: translateY(1px);
 }
 
 .sidebar-foot {
@@ -300,7 +332,7 @@ html.sb-collapsed .sidebar-toggle::before {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.55);
   z-index: 39;
 }
 
@@ -328,7 +360,7 @@ html.sb-collapsed .page-main {
   }
 }
 
-/* 主区域顶栏：左侧页面标题，右侧用户头像 */
+/* 主区域顶栏：青色下划线 + 左侧斜切竖条 */
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -336,21 +368,21 @@ html.sb-collapsed .page-main {
   gap: 16px;
   margin-bottom: 24px;
   padding-bottom: 14px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-strong);
+  box-shadow: 0 1px 14px -6px var(--glow);
 }
 
 .topbar-title {
   position: relative;
-  font-size: 1.12em;
+  font-size: 1.14em;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   padding-left: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 标题左侧的斜切霓虹竖条 */
 .topbar-title::before {
   content: "";
   position: absolute;
@@ -359,22 +391,24 @@ html.sb-collapsed .page-main {
   bottom: 3px;
   width: 4px;
   background: var(--accent-color);
-  transform: skewY(-14deg);
   box-shadow: 0 0 10px var(--glow);
+  transform: skewY(-14deg);
 }
 
-/* 斜切贴纸式小节标题（参照 brutalist 风格） */
+/* 斜切贴纸式小节标题：黄块 + 品红硬投影 */
 .section-title {
   display: inline-block;
   transform: skew(-8deg);
-  background: var(--text-color);
-  color: var(--bg-color);
+  background: var(--neon-yellow);
+  color: var(--on-yellow);
   font-style: italic;
   font-weight: 800;
-  letter-spacing: 1px;
-  padding: 3px 18px;
-  margin: 0 0 18px;
-  box-shadow: 5px 5px 0 var(--accent-color);
+  letter-spacing: 2px;
+  padding: 4px 20px;
+  margin: 0 0 20px;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  box-shadow: 6px 6px 0 var(--accent-2);
+  text-shadow: none;
 }
 
 /* ---------- 右上角头像菜单 ---------- */
@@ -388,18 +422,21 @@ html.sb-collapsed .page-main {
   align-items: center;
   gap: 8px;
   width: auto;
-  border: none;
-  background: none;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
   padding: 3px 12px 3px 3px;
-  border-radius: 999px;
+  clip-path: var(--cut);
   cursor: pointer;
   color: var(--text-color);
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  font: inherit;
+  transition: border-color 0.15s ease, filter 0.15s ease;
 }
 
 .user-chip:hover {
-  background: var(--surface-hover);
-  box-shadow: 0 0 14px var(--glow);
+  border-color: var(--accent-color);
+  filter: drop-shadow(0 0 10px var(--glow));
+  background: var(--surface);
+  color: var(--text-color);
 }
 
 .user-chip .user-name {
@@ -412,8 +449,7 @@ html.sb-collapsed .page-main {
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: 50%;
-  border: 2px solid var(--accent-color);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
   color: #fff;
   font-size: 0.95em;
   font-weight: 600;
@@ -428,7 +464,7 @@ html.sb-collapsed .page-main {
   white-space: nowrap;
 }
 
-/* 下拉面板从头像下方弹出，右对齐 */
+/* 下拉面板从头像下方弹出，右对齐，切角 */
 .user-dropdown {
   display: none;
   position: absolute;
@@ -436,11 +472,11 @@ html.sb-collapsed .page-main {
   right: 0;
   left: auto;
   bottom: auto;
-  min-width: 180px;
+  min-width: 190px;
   background: var(--surface);
   border: 1px solid var(--border-strong);
-  border-radius: 10px;
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.28), 0 0 0 1px var(--glow);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 10px var(--glow));
   padding: 6px 0;
   z-index: 60;
 }
@@ -466,7 +502,6 @@ html.sb-collapsed .page-main {
 .user-dropdown button:hover {
   background: var(--surface-hover);
   color: var(--accent-color);
-  text-decoration: none;
 }
 
 /* 设置二级面板：点「⚙️ 设置」切换显示 */
@@ -527,6 +562,7 @@ html.sb-collapsed .page-main {
 
 .theme-toggle input:checked + .switch {
   background: var(--accent-color);
+  box-shadow: 0 0 8px var(--glow);
 }
 
 .theme-toggle input:checked + .switch::after {
@@ -546,10 +582,10 @@ html.sb-collapsed .page-main {
 .my-item {
   padding: 12px 14px;
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  clip-path: var(--cut);
   background: var(--surface);
   margin-bottom: 10px;
-  box-shadow: var(--card-shadow);
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35));
 }
 
 .my-item-body {
@@ -563,13 +599,13 @@ html.sb-collapsed .page-main {
   font-size: 0.9em;
 }
 
-/* 编号文章列表：卡片式条目，悬停浮起 + 霓虹描边 */
+/* 编号文章列表：2077 切角卡片，悬停右滑 + 霓虹描边 */
 .post-list {
   list-style: none;
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 10px;
+  gap: 12px;
   counter-reset: post;
 }
 
@@ -579,43 +615,44 @@ html.sb-collapsed .page-main {
   justify-content: space-between;
   align-items: baseline;
   gap: 14px;
-  padding: 14px 16px;
+  padding: 15px 18px;
   background: var(--surface);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  box-shadow: var(--card-shadow);
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  clip-path: var(--cut);
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35));
+  transition: transform 0.15s ease, border-color 0.15s ease, filter 0.15s ease;
 }
 
 .post-list li::before {
   content: counter(post, decimal-leading-zero);
   font-family: var(--mono);
   font-weight: 700;
-  font-size: 0.88em;
+  font-size: 0.9em;
   color: var(--accent-color);
+  text-shadow: 0 0 8px var(--glow);
   flex: none;
 }
 
 .post-list li:hover {
-  transform: translateY(-2px);
+  transform: translateX(6px);
   border-color: var(--accent-color);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18), 0 0 14px var(--glow);
+  filter: drop-shadow(0 0 12px var(--glow)) drop-shadow(0 6px 14px rgba(0, 0, 0, 0.4));
 }
 
 .post-list li a {
   flex: 1; /* 标题占满剩余空间，整行都是点击目标 */
   color: var(--text-color);
   font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 .post-list li a:hover {
   color: var(--accent-color);
-  text-decoration: none;
 }
 
 time {
   color: var(--secondary-color);
-  font-size: 0.9em;
+  font-size: 0.88em;
   font-family: var(--mono);
 }
 
@@ -631,10 +668,11 @@ time {
 
 .toolbar input {
   width: 100%;
-  padding: 8px 12px;
+  padding: 9px 12px;
   border: 1px solid var(--border-strong);
-  border-radius: 8px;
+  clip-path: var(--cut);
   font: inherit;
+  caret-color: var(--accent-color);
   background: var(--surface);
   color: var(--text-color);
 }
@@ -647,69 +685,71 @@ time {
 }
 
 .filter-notice {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   padding: 8px 14px;
-  background: var(--surface-hover);
-  border-left: 3px solid var(--accent-color);
-  border-radius: 6px;
+  background: var(--surface);
+  border-left: 3px solid var(--neon-yellow);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
   font-size: 0.92em;
   color: var(--secondary-color);
 }
 
+/* 标签：直角小牌，等宽字体 */
 .tag {
   display: inline-block;
   padding: 2px 12px;
   border: 1px solid var(--border-strong);
-  border-radius: 999px;
-  font-size: 0.85em;
+  font-size: 0.84em;
   color: var(--text-color);
   font-family: var(--mono);
-  transition: border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  transition: border-color 0.15s ease, color 0.15s ease, filter 0.15s ease;
 }
 
 .tag:hover {
   border-color: var(--accent-color);
   color: var(--accent-color);
-  box-shadow: 0 0 10px var(--glow);
-  text-decoration: none;
+  filter: drop-shadow(0 0 8px var(--glow));
 }
 
 .tag.active {
   background: var(--accent-color);
   border-color: var(--accent-color);
   color: var(--on-accent);
-  box-shadow: 0 0 12px var(--glow);
+  filter: drop-shadow(0 0 10px var(--glow));
 }
 
 /* ---------- 登录 / 注册 ---------- */
 
 .auth-box {
   max-width: 420px;
-  margin: 0 auto;
-  padding: 28px;
+  margin: 60px auto 0;
+  padding: 30px;
   background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  box-shadow: 0 12px 42px rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--border-strong);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+  filter: drop-shadow(0 14px 40px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 14px var(--glow));
 }
 
 /* ---------- 按钮与表单 ---------- */
 
 button {
-  padding: 6px 14px;
+  padding: 7px 16px;
   border: 1px solid var(--border-strong);
   background: var(--surface);
   color: var(--text-color);
-  border-radius: 8px;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
   font: inherit;
   cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, filter 0.15s ease;
 }
 
+/* 2077 式反转悬停：反色填充 */
 button:hover {
+  background: var(--accent-color);
   border-color: var(--accent-color);
-  color: var(--accent-color);
-  box-shadow: 0 0 10px var(--glow);
+  color: var(--on-accent);
+  filter: drop-shadow(0 0 10px var(--glow));
 }
 
 button:active {
@@ -719,20 +759,20 @@ button:active {
 button:disabled {
   opacity: 0.5;
   cursor: default;
-  box-shadow: none;
+  filter: none;
 }
 
 input[type="text"],
 input[type="password"],
 input[type="search"],
 textarea {
-  padding: 8px 12px;
+  padding: 9px 12px;
   border: 1px solid var(--border-strong);
-  border-radius: 8px;
   font: inherit;
+  caret-color: var(--accent-color);
   background: var(--surface);
   color: var(--text-color);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, filter 0.15s ease;
 }
 
 .stack {
@@ -762,7 +802,7 @@ input:focus,
 textarea:focus {
   outline: none;
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px var(--glow);
+  filter: drop-shadow(0 0 8px var(--glow));
 }
 
 .error {
@@ -780,6 +820,7 @@ textarea:focus {
 
 .post-title {
   margin-bottom: 5px;
+  letter-spacing: 0.5px;
 }
 
 .post-meta {
@@ -792,8 +833,8 @@ textarea:focus {
   color: var(--danger-color);
   border: 1px solid var(--danger-color);
   padding: 0 6px;
-  border-radius: 4px;
   font-size: 0.85em;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
 }
 
 .post-tags {
@@ -807,29 +848,30 @@ textarea:focus {
 .post-content pre {
   background: var(--code-bg);
   border: 1px solid var(--border-color);
+  border-left: 3px solid var(--accent-color);
   padding: 12px;
   overflow-x: auto;
-  border-radius: 8px;
 }
 
 .post-content code {
   background: var(--code-bg);
-  padding: 1px 5px;
-  border-radius: 4px;
+  padding: 1px 6px;
   font-family: var(--mono);
   font-size: 0.92em;
+  color: var(--accent-color);
 }
 
 .post-content pre code {
   padding: 0;
   background: none;
+  color: var(--text-color);
 }
 
 .post-content blockquote {
   margin: 0;
   padding: 0 15px;
   color: var(--secondary-color);
-  border-left: 4px solid var(--accent-color);
+  border-left: 3px solid var(--accent-2);
 }
 
 .post-actions {
@@ -839,7 +881,8 @@ textarea:focus {
 /* ---------- 评论 ---------- */
 
 .comments {
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-strong);
+  box-shadow: 0 -1px 14px -8px var(--glow);
   padding-top: 20px;
 }
 
@@ -855,9 +898,10 @@ textarea:focus {
 .comment {
   padding: 12px 14px;
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  clip-path: var(--cut);
   background: var(--surface);
   margin-bottom: 10px;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.3));
 }
 
 .comment-meta {
@@ -875,9 +919,10 @@ textarea:focus {
 }
 
 .comment-del:hover {
+  background: var(--danger-color);
   border-color: var(--danger-color);
-  color: var(--danger-color);
-  box-shadow: 0 0 8px rgba(255, 84, 112, 0.3);
+  color: #fff;
+  filter: drop-shadow(0 0 8px var(--glow-pink));
 }
 
 .comment-like {
@@ -888,10 +933,11 @@ textarea:focus {
 }
 
 .comment-like[data-liked="1"] {
-  color: var(--accent-color);
+  background: var(--accent-color);
   border-color: var(--accent-color);
-  box-shadow: 0 0 8px var(--glow);
-  opacity: 0.85;
+  color: var(--on-accent);
+  filter: drop-shadow(0 0 8px var(--glow));
+  opacity: 0.9;
   cursor: default;
 }
 
@@ -917,6 +963,7 @@ textarea:focus {
   color: var(--accent-color);
   font-size: 1.2em;
   font-family: var(--mono);
+  text-shadow: 0 0 10px var(--glow);
 }
 
 .visits-table {
@@ -965,7 +1012,7 @@ textarea:focus {
   gap: 10px;
   padding: 10px 12px;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  clip-path: var(--cut);
   background: var(--surface);
   margin-bottom: 8px;
 }
@@ -979,13 +1026,14 @@ textarea:focus {
 /* ---------- 归档 ---------- */
 
 .archive-month {
-  margin-bottom: 24px;
+  margin-bottom: 26px;
 }
 
 .archive-month h2 {
   margin-bottom: 10px;
   font-family: var(--mono);
-  font-size: 1.05em;
+  font-size: 1.02em;
+  letter-spacing: 2px;
   color: var(--secondary-color);
 }
 
@@ -1004,7 +1052,7 @@ textarea:focus {
 
   html.sb-open .sidebar {
     transform: translateX(0) !important;
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
   }
 
   html.sb-open .sidebar-backdrop {
