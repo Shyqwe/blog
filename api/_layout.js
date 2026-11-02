@@ -9,6 +9,17 @@ function avatarColor(username) {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
+/** 在页面渲染前应用本地保存的主题，避免深色模式闪白 */
+const THEME_SCRIPT = `<script>
+  (function () {
+    try {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch (e) {}
+  })();
+</script>`;
+
 /** 公共页面骨架：所有需要登录的页面共用，user 为当前登录用户 */
 export function layout(title, bodyHtml, user = null) {
   const fullTitle = title === '我的博客' ? title : `${esc(title)} - 我的博客`;
@@ -19,6 +30,7 @@ export function layout(title, bodyHtml, user = null) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${fullTitle}</title>
+  ${THEME_SCRIPT}
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -37,11 +49,22 @@ export function layout(title, bodyHtml, user = null) {
           <span class="user-name">${esc(user.username)}</span>
         </button>
         <div class="user-dropdown">
-          <a href="/my/posts">我的文章</a>
-          <a href="/my/comments">我的评论</a>
-          <a href="/my/liked-posts">赞过的文章</a>
-          <a href="/my/liked-comments">赞过的评论</a>
-          <button type="button" id="logout-link">退出登录</button>
+          <div class="menu-panel">
+            <a href="/my/posts">我的文章</a>
+            <a href="/my/comments">我的评论</a>
+            <a href="/my/liked-posts">赞过的文章</a>
+            <a href="/my/liked-comments">赞过的评论</a>
+            <button type="button" id="settings-link">⚙️ 设置</button>
+          </div>
+          <div class="settings-panel">
+            <button type="button" id="settings-back" class="settings-back">‹ 返回</button>
+            <label class="theme-toggle">
+              <span>深色模式</span>
+              <input type="checkbox" id="theme-switch">
+              <span class="switch"></span>
+            </label>
+            <button type="button" id="logout-link">退出登录</button>
+          </div>
         </div>
       </div>`
           : ''
@@ -51,7 +74,7 @@ export function layout(title, bodyHtml, user = null) {
   ${bodyHtml}
   <footer class="site-footer">
     <span class="muted">${user ? `${esc(user.username)} 已登录` : ''}</span>
-    <a href="/admin">管理</a>
+    ${user?.is_admin ? '<a href="/admin">管理</a>' : ''}
   </footer>
   <script src="/js/user-menu.js" defer></script>
 </body>

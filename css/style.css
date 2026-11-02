@@ -4,6 +4,29 @@
   --accent-color: #0366d6;
   --secondary-color: #888;
   --border-color: #eee;
+  --border-strong: #ddd;
+  --muted-border: #f0f0f0;
+  --surface: #fff;
+  --surface-hover: #f5f5f5;
+  --code-bg: #f6f8fa;
+  --danger-color: #c0392b;
+  color-scheme: light;
+}
+
+/* 深色模式：由 <html data-theme="dark"> 触发（js/user-menu.js + 各页面内联脚本） */
+[data-theme="dark"] {
+  --text-color: #d6d6d8;
+  --bg-color: #17181c;
+  --accent-color: #5b9bff;
+  --secondary-color: #8f9096;
+  --border-color: #2a2c33;
+  --border-strong: #34363e;
+  --muted-border: #222329;
+  --surface: #1f2126;
+  --surface-hover: #26282e;
+  --code-bg: #24262c;
+  --danger-color: #e57368;
+  color-scheme: dark;
 }
 
 * {
@@ -18,6 +41,7 @@ body {
   line-height: 1.7;
   color: var(--text-color);
   background: var(--bg-color);
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 a {
@@ -72,10 +96,11 @@ a:hover {
   padding: 4px 6px;
   border-radius: 999px;
   cursor: pointer;
+  color: var(--text-color);
 }
 
 .user-chip:hover {
-  background: #f5f5f5;
+  background: var(--surface-hover);
 }
 
 .avatar {
@@ -104,7 +129,7 @@ a:hover {
   right: 0;
   top: calc(100% + 6px);
   min-width: 150px;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -131,8 +156,72 @@ a:hover {
 
 .user-dropdown a:hover,
 .user-dropdown button:hover {
-  background: #f5f5f5;
+  background: var(--surface-hover);
   text-decoration: none;
+}
+
+/* 设置二级面板：点「⚙️ 设置」切换显示 */
+.user-dropdown .settings-panel {
+  display: none;
+}
+
+.user-menu.settings-open .menu-panel {
+  display: none;
+}
+
+.user-menu.settings-open .settings-panel {
+  display: block;
+}
+
+.settings-back {
+  color: var(--secondary-color);
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 4px;
+  padding-bottom: 10px;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 16px;
+  cursor: pointer;
+}
+
+.theme-toggle input {
+  display: none;
+}
+
+.switch {
+  position: relative;
+  width: 34px;
+  height: 18px;
+  background: var(--border-strong);
+  border-radius: 999px;
+  transition: background 0.15s;
+  flex: none;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s;
+}
+
+.theme-toggle input:checked + .switch {
+  background: var(--accent-color);
+}
+
+.theme-toggle input:checked + .switch::after {
+  transform: translateX(16px);
 }
 
 .user-dropdown #logout-link {
@@ -140,14 +229,14 @@ a:hover {
   margin-top: 4px;
   padding-top: 10px;
   padding-bottom: 10px;
-  color: #c0392b;
+  color: var(--danger-color);
 }
 
 /* ---------- 「我的…」页面 ---------- */
 
 .my-item {
   padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--muted-border);
 }
 
 .my-item-body {
@@ -171,7 +260,7 @@ a:hover {
   justify-content: space-between;
   align-items: baseline;
   padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--muted-border);
 }
 
 time {
@@ -192,9 +281,11 @@ time {
 .toolbar input {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   font: inherit;
+  background: var(--surface);
+  color: var(--text-color);
 }
 
 .tag-bar {
@@ -207,7 +298,7 @@ time {
 .tag {
   display: inline-block;
   padding: 2px 10px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-strong);
   border-radius: 999px;
   font-size: 0.85em;
   color: var(--text-color);
@@ -235,8 +326,9 @@ time {
 
 button {
   padding: 6px 14px;
-  border: 1px solid #ddd;
-  background: #fff;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-color);
   border-radius: 6px;
   font: inherit;
   cursor: pointer;
@@ -257,9 +349,11 @@ input[type="password"],
 input[type="search"],
 textarea {
   padding: 8px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   font: inherit;
+  background: var(--surface);
+  color: var(--text-color);
 }
 
 .stack {
@@ -292,7 +386,7 @@ textarea:focus {
 }
 
 .error {
-  color: #c0392b;
+  color: var(--danger-color);
   margin: 0;
   min-height: 1.2em;
 }
@@ -314,8 +408,8 @@ textarea:focus {
 }
 
 .draft-badge {
-  color: #c0392b;
-  border: 1px solid #c0392b;
+  color: var(--danger-color);
+  border: 1px solid var(--danger-color);
   padding: 0 6px;
   border-radius: 4px;
   font-size: 0.85em;
@@ -330,14 +424,14 @@ textarea:focus {
 }
 
 .post-content pre {
-  background: #f6f8fa;
+  background: var(--code-bg);
   padding: 12px;
   overflow-x: auto;
   border-radius: 6px;
 }
 
 .post-content code {
-  background: #f6f8fa;
+  background: var(--code-bg);
   padding: 1px 5px;
   border-radius: 4px;
 }
@@ -376,7 +470,7 @@ textarea:focus {
 
 .comment {
   padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--muted-border);
 }
 
 .comment-meta {
@@ -389,19 +483,19 @@ textarea:focus {
 .comment-del {
   padding: 1px 8px;
   font-size: 0.8em;
-  border-color: #eee;
+  border-color: var(--border-color);
   color: var(--secondary-color);
 }
 
 .comment-del:hover {
-  border-color: #c0392b;
-  color: #c0392b;
+  border-color: var(--danger-color);
+  color: var(--danger-color);
 }
 
 .comment-like {
   padding: 1px 8px;
   font-size: 0.8em;
-  border-color: #eee;
+  border-color: var(--border-color);
   color: var(--secondary-color);
 }
 
@@ -410,6 +504,15 @@ textarea:focus {
   border-color: var(--accent-color);
   opacity: 0.7;
   cursor: default;
+}
+
+.comment-meta time {
+  margin-left: 8px;
+}
+
+.comment-body {
+  margin: 0;
+  white-space: pre-wrap;
 }
 
 /* ---------- 访问记录（管理后台） ---------- */
@@ -436,7 +539,7 @@ textarea:focus {
 .visits-table td {
   text-align: left;
   padding: 6px 8px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--muted-border);
 }
 
 .visits-table th {
@@ -448,15 +551,6 @@ textarea:focus {
   margin-top: 35px;
   padding-top: 20px;
   border-top: 1px solid var(--border-color);
-}
-
-.comment-meta time {
-  margin-left: 8px;
-}
-
-.comment-body {
-  margin: 0;
-  white-space: pre-wrap;
 }
 
 /* ---------- 管理后台 ---------- */
@@ -478,7 +572,7 @@ textarea:focus {
   align-items: center;
   gap: 10px;
   padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--muted-border);
 }
 
 #editor-section {
