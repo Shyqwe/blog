@@ -51,7 +51,10 @@ export default async function handler(req, res) {
       (tag ? `<p class="filter-notice">标签「${esc(tag)}」 · <a href="${q ? `/?q=${encodeURIComponent(q)}` : '/'}">清除筛选</a></p>` : '') +
       (q ? `<p class="filter-notice">搜索「${esc(q)}」：共 ${posts.length} 篇</p>` : '');
 
+    const heading = q ? '搜索结果' : tag ? '标签筛选' : '最新文章';
+
     const body = `
+  <h2 class="section-title">${heading}</h2>
   ${notices}
   <ul class="post-list">${list}</ul>
   ${posts.length ? '' : '<p class="muted">没有找到匹配的文章。</p>'}`;
