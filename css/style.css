@@ -220,6 +220,32 @@ html.sb-collapsed .page-main {
   min-height: 100vh;
 }
 
+/* 宽屏时让内容区在边栏右侧的空间里居中，避免右侧大片空旷 */
+@media (min-width: 1280px) {
+  .page-main {
+    margin-left: max(232px, calc((100vw - 800px) / 2));
+  }
+}
+
+/* 主区域顶栏：左侧页面标题，右侧用户头像 */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.topbar-title {
+  font-size: 1.05em;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ---------- 右上角头像菜单（挂在侧边栏底部） ---------- */
 
 .user-menu {
@@ -230,11 +256,11 @@ html.sb-collapsed .page-main {
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 100%;
+  width: auto;
   border: none;
   background: none;
-  padding: 6px 8px;
-  border-radius: 8px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 999px;
   cursor: pointer;
   color: var(--text-color);
 }
@@ -267,13 +293,15 @@ html.sb-collapsed .page-main {
   white-space: nowrap;
 }
 
-/* 下拉面板从头像右侧弹出 */
+/* 下拉面板从头像下方弹出，右对齐（挂在顶栏，不再被侧边栏裁切） */
 .user-dropdown {
   display: none;
   position: absolute;
-  left: calc(100% + 8px);
-  bottom: 0;
-  min-width: 160px;
+  top: calc(100% + 8px);
+  right: 0;
+  left: auto;
+  bottom: auto;
+  min-width: 180px;
   background: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: 8px;

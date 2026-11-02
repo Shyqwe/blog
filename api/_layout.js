@@ -66,10 +66,14 @@ export function layout(title, bodyHtml, user = null, opts = {}) {
       ${user?.is_admin ? '<a href="/admin" class="side-link">📊 管理</a>' : ''}
     </nav>
 
-    <div class="sidebar-foot">${
-      user
-        ? `
-      <div class="user-menu" id="user-menu">
+  </aside>
+
+  <main class="page-main">
+    <header class="topbar">
+      <span class="topbar-title">${esc(title === '我的博客' ? '首页' : title)}</span>
+      ${
+        user
+          ? `<div class="user-menu" id="user-menu">
         <button class="user-chip" type="button" title="${esc(user.username)}">
           <span class="avatar" style="background:${avatarColor(user.username)}">${esc(firstChar)}</span>
           <span class="user-name">${esc(user.username)}</span>
@@ -93,12 +97,9 @@ export function layout(title, bodyHtml, user = null, opts = {}) {
           </div>
         </div>
       </div>`
-        : ''
-    }
-    </div>
-  </aside>
-
-  <main class="page-main">
+          : ''
+      }
+    </header>
     ${bodyHtml}
   </main>
   <script src="/js/user-menu.js" defer></script>
