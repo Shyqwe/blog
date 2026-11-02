@@ -80,8 +80,11 @@ async function init() {
     const posts = await jsonFetch(me.is_admin ? '/api/posts?all=1' : '/api/posts?mine=1');
     renderList(posts);
 
-    // 访问记录仅管理员可见
-    if (me.is_admin) loadVisits();
+    // 访问记录与用户管理仅管理员可见
+    if (me.is_admin) {
+      loadVisits();
+      loadUsers();
+    }
   } catch (err) {
     if (err.status === 401) {
       show(adminSection, false);
@@ -176,6 +179,52 @@ async function loadVisits() {
     show(section, false); // 静默失败，不影响文章管理
   }
 }
+
+// ---------- 用户管理（仅管理员）：列出全部注册用户，可删除 ----------
+
+async function loadUsers() {
+  const section = document.getElementById('users-section');
+  try {
+    const { users } = await jsonFetch('/api/me?users=1');
+    show(section, true);
+    document.getElementById('user-rows').innerHTML =
+      users
+        .map((u) => {
+          const del =
+            u.is_admin || u.id === me.id
+              ? '<span class="muted">—</span>'
+              : `<button data-user-del="${u.id}" data-username="${escapeHtml(u.username)}">删除</button>`;
+          return `
+      <tr>
+        <td>${u.id}</td>
+        <td>${escapeHtml(u.username)}${u.is_admin ? ' <span class="draft-badge">管理员</span>' : ''}</td>
+        <td>${u.post_count}</td>
+        <td>${u.comment_count}</td>
+        <td>${fmtDate(u.created_at)}</td>
+        <td>${del}</td>
+      </tr>`;
+        })
+        .join('') || '<tr><td colspan="6" class="muted">还没有注册用户。</td></tr>';
+  } catch {
+    show(section, false); // 非管理员或接口失败时整块隐藏
+  }
+}
+
+document.getElementById('user-rows').addEventListener('click', async (e) => {
+  const btn = e.target.closest('button[data-user-del]');
+  if (!btn) return;
+  const id = btn.dataset.userDel;
+  const name = btn.dataset.username;
+  if (!confirm(`确定删除用户「${name}」？\n该用户的文章、评论和点赞记录会一并删除，不可恢复。`)) return;
+  btn.disabled = true;
+  try {
+    await jsonFetch(`/api/me?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+    init(); // 用户表和文章列表都刷新（文章数可能变化）
+  } catch (err) {
+    btn.disabled = false;
+    alert(err.message);
+  }
+});
 
 // ---------- 编辑器 ----------
 
