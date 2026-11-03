@@ -7,9 +7,10 @@
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!fine || reduced) return;
 
-  // 倾斜强度：rotateY 最大 ±14°，rotateX 最大 ±10°
-  const MAX_Y = 14;
-  const MAX_X = 10;
+  // 倾斜强度：rotateY 最大 ±22°，rotateX 最大 ±16°，磁吸位移 ±5px
+  const MAX_Y = 22;
+  const MAX_X = 16;
+  const MAX_SHIFT = 5;
 
   const SELECTOR = '.post-list li, .my-item, .comment, .auth-box, .user-chip';
 
@@ -28,6 +29,8 @@
         const py = Math.min(Math.max((e.clientY - r.top) / r.height, 0), 1);
         el.style.setProperty('--ry', ((px - 0.5) * MAX_Y).toFixed(2) + 'deg');
         el.style.setProperty('--rx', ((0.5 - py) * MAX_X).toFixed(2) + 'deg');
+        el.style.setProperty('--tx', ((px - 0.5) * MAX_SHIFT).toFixed(1) + 'px');
+        el.style.setProperty('--ty', ((py - 0.5) * MAX_SHIFT).toFixed(1) + 'px');
         el.style.setProperty('--mx', (px * 100).toFixed(1) + '%');
         el.style.setProperty('--my', (py * 100).toFixed(1) + '%');
       });
@@ -36,6 +39,8 @@
     el.addEventListener('mouseleave', () => {
       el.style.setProperty('--rx', '0deg');
       el.style.setProperty('--ry', '0deg');
+      el.style.setProperty('--tx', '0px');
+      el.style.setProperty('--ty', '0px');
       el.style.setProperty('--mx', '50%');
       el.style.setProperty('--my', '50%');
     });

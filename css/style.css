@@ -681,29 +681,40 @@ html.sb-collapsed .page-main {
   filter: drop-shadow(0 0 12px var(--glow)) drop-shadow(0 6px 14px rgba(0, 0, 0, 0.4));
 }
 
-/* 3D 倾斜底座：rotateX/rotateY 由 js/effects.js 随光标写入，聚光灯跟随 */
+/* 3D 倾斜底座：rotateX/rotateY 由 js/effects.js 随光标写入，聚光灯跟随；
+   磁吸位移朝光标方向轻微平移，透视拉近让立体畸变更明显 */
 [data-tilt] {
-  transform: perspective(750px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform: perspective(700px) translate3d(var(--tx, 0px), var(--ty, 0px), 0)
+    rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
   transform-style: preserve-3d;
   transition: transform 0.16s cubic-bezier(0.22, 0.61, 0.36, 1);
   position: relative;
 }
 
+/* 悬停：整体向观者浮起 + 微放大 */
 [data-tilt]:hover {
-  transform: perspective(750px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(8px);
+  transform: perspective(700px) translate3d(var(--tx, 0px), var(--ty, 0px), 14px)
+    rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.015);
 }
 
-/* 跟随光标的聚光灯 */
+/* 跟随光标的聚光灯 + 斜向眩光 */
 [data-tilt]::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(
-    circle at var(--mx, 50%) var(--my, 50%),
-    rgba(0, 240, 255, 0.16),
-    transparent 55%
-  );
+  background:
+    radial-gradient(
+      circle at var(--mx, 50%) var(--my, 50%),
+      rgba(0, 240, 255, 0.2),
+      transparent 58%
+    ),
+    linear-gradient(
+      115deg,
+      transparent 32%,
+      rgba(255, 255, 255, 0.09) 45%,
+      transparent 58%
+    );
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -738,10 +749,25 @@ html.sb-collapsed .page-main {
   color: var(--text-color);
   font-weight: 500;
   letter-spacing: 0.5px;
+  transition: transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1), color 0.18s ease;
 }
 
 .post-list li a:hover {
   color: var(--accent-color);
+}
+
+/* 悬停时标题/日期沿 Z 轴掀离卡面，和卡片的 3D 倾斜叠出纵深 */
+.post-list li:hover a {
+  transform: translateZ(26px);
+  color: var(--accent-color);
+}
+
+.post-list li:hover time {
+  transform: translateZ(18px);
+}
+
+.post-list li time {
+  transition: transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 time {
