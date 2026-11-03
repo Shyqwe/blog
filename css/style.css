@@ -249,7 +249,20 @@ a:hover {
   color: var(--text-color);
   letter-spacing: 2px;
   white-space: nowrap;
+  transform-style: preserve-3d;
+  perspective: 600px;
   transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+/* 图标 3D 翻滚：悬停时绕 Y 轴翻转一周并浮起 */
+.side-link .ico {
+  display: inline-block;
+  transform-origin: 50% 55%;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.side-link:hover .ico {
+  transform: translateZ(16px) rotateY(360deg) scale(1.15);
 }
 
 /* 导航项左侧的霓虹指示条 */
@@ -296,6 +309,7 @@ a:hover {
   font-weight: 800;
   letter-spacing: 4px;
   text-align: center;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.5)) drop-shadow(0 0 10px var(--glow-yellow));
   transition:
     filter 0.18s cubic-bezier(0.22, 0.61, 0.36, 1),
     transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -307,15 +321,16 @@ a:hover {
 }
 
 .side-cta:hover {
-  filter: drop-shadow(0 0 12px var(--glow-yellow));
-  transform: translateY(-1px);
+  filter: drop-shadow(0 6px 0 rgba(0, 0, 0, 0.5)) drop-shadow(0 0 18px var(--glow-yellow));
+  transform: translateY(-2px);
   letter-spacing: 6px; /* 悬停时字距拉开，机械感 */
   color: var(--on-yellow);
   background: var(--neon-yellow);
 }
 
 .side-cta:active {
-  transform: translateY(1px);
+  transform: translateY(2px);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.5));
   letter-spacing: 4px;
   transition-duration: 0.06s;
 }
@@ -662,10 +677,61 @@ html.sb-collapsed .page-main {
 }
 
 .post-list li:hover {
-  transform: translateX(6px);
   border-color: var(--accent-color);
   filter: drop-shadow(0 0 12px var(--glow)) drop-shadow(0 6px 14px rgba(0, 0, 0, 0.4));
 }
+
+/* 3D 倾斜底座：rotateX/rotateY 由 js/effects.js 随光标写入，聚光灯跟随 */
+[data-tilt] {
+  transform: perspective(750px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.16s cubic-bezier(0.22, 0.61, 0.36, 1);
+  position: relative;
+}
+
+[data-tilt]:hover {
+  transform: perspective(750px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(8px);
+}
+
+/* 跟随光标的聚光灯 */
+[data-tilt]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(0, 240, 255, 0.16),
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+[data-tilt]:hover::after {
+  opacity: 1;
+}
+
+/* 列表入场：逐张「翻入」错峰登场 */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: perspective(750px) rotateX(14deg) translateY(14px);
+  }
+}
+
+.post-list li {
+  animation: card-in 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+}
+
+.post-list li:nth-child(1) { animation-delay: 0.03s; }
+.post-list li:nth-child(2) { animation-delay: 0.08s; }
+.post-list li:nth-child(3) { animation-delay: 0.13s; }
+.post-list li:nth-child(4) { animation-delay: 0.18s; }
+.post-list li:nth-child(5) { animation-delay: 0.23s; }
+.post-list li:nth-child(6) { animation-delay: 0.28s; }
+.post-list li:nth-child(7) { animation-delay: 0.33s; }
+.post-list li:nth-child(n + 8) { animation-delay: 0.38s; }
 
 .post-list li a {
   flex: 1; /* 标题占满剩余空间，整行都是点击目标 */
@@ -769,6 +835,8 @@ button {
   clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
   font: inherit;
   cursor: pointer;
+  /* 3D 键帽：叠层 drop-shadow 沿切角轮廓挤出「厚度」（box-shadow 会被切角裁掉） */
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.55)) drop-shadow(0 3px 0 rgba(0, 0, 0, 0.25));
   /* 丝滑三件套：回弹曲线 + 位移/发光一起过渡 */
   transition:
     background-color 0.18s cubic-bezier(0.22, 0.61, 0.36, 1),
@@ -778,18 +846,20 @@ button {
     transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* 2077 式反转悬停：反色填充 + 微浮起 */
+/* 2077 式反转悬停：反色填充 + 抬起（厚度加深 + 辉光） */
 button:hover {
   background: var(--accent-color);
   border-color: var(--accent-color);
   color: var(--on-accent);
-  filter: drop-shadow(0 0 10px var(--glow));
-  transform: translateY(-1px);
+  filter: drop-shadow(0 5px 0 rgba(0, 0, 0, 0.55)) drop-shadow(0 5px 0 rgba(0, 0, 0, 0.25))
+    drop-shadow(0 0 12px var(--glow));
+  transform: translateY(-2px);
 }
 
-/* 按下：干脆的回弹 */
+/* 按下：键帽压进桌面，厚度塌缩 */
 button:active {
-  transform: translateY(1px) scale(0.97);
+  transform: translateY(2px);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.55));
   transition-duration: 0.06s;
 }
 
@@ -808,7 +878,6 @@ textarea:focus-visible,
 .user-chip:focus-visible {
   outline: 1px solid var(--accent-color);
   outline-offset: 2px;
-  filter: drop-shadow(0 0 6px var(--glow));
 }
 
 input[type="text"],

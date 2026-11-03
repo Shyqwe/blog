@@ -35,7 +35,7 @@ export function layout(title, bodyHtml, user = null, opts = {}) {
   const active = opts.active || '';
   const search = esc(opts.search || '');
   const navLink = (href, icon, label) =>
-    `<a href="${href}" class="side-link${active === href ? ' active' : ''}">${icon} ${label}</a>`;
+    `<a href="${href}" class="side-link${active === href ? ' active' : ''}"><span class="ico">${icon}</span>${label}</a>`;
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -59,13 +59,13 @@ export function layout(title, bodyHtml, user = null, opts = {}) {
       <input type="search" name="q" placeholder="搜索文章…" value="${search}">
     </form>
 
-    <a href="/admin" class="side-link side-cta">✏️ 写文章</a>
+    <a href="/admin" class="side-link side-cta"><span class="ico">✏️</span> 写文章</a>
 
     <nav class="sidebar-nav">
       ${navLink('/', '🏠', '首页')}
       ${navLink('/archive', '📅', '归档')}
       ${navLink('/about', '👤', '关于')}
-      ${user?.is_admin ? '<a href="/admin" class="side-link">📊 管理</a>' : ''}
+      ${user?.is_admin ? '<a href="/admin" class="side-link"><span class="ico">📊</span> 管理</a>' : ''}
     </nav>
 
   </aside>
@@ -105,6 +105,7 @@ export function layout(title, bodyHtml, user = null, opts = {}) {
     ${bodyHtml}
   </main>
   <script src="/js/user-menu.js" defer></script>
+  <script src="/js/effects.js" defer></script>
 </body>
 </html>`;
 }
